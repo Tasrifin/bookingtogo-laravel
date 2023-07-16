@@ -43,7 +43,7 @@
                                 <div class="row">
                                     <div class="form-group col-md-6">
                                         <label for="name">Date of Birth</label>
-                                        <input type="text" class="form-control" id="cst_dob" name="cst_dob" placeholder="YYYY-MM-DD" required>
+                                        <input type="text" class="form-control selector" id="cst_dob" name="cst_dob" placeholder="YYYY-MM-DD" autocomplete="off" required>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label for="email">Phone Number</label>
@@ -64,7 +64,7 @@
                                     </div>
                                 </div>
                                 <div class="row float-right" id="add-family">
-                                    <a class="btn btn-success btn-sm">
+                                    <a class="btn btn-success btn-sm" onclick="addFamily()">
                                         <i class="text-white">+ Add Family</i>
                                     </a>
                                 </div>
@@ -95,29 +95,30 @@
 @endsection
 @push('scripts')
 <script>
-    $(document).ready(function(){
+    //appendrow
+    function addFamily(){
+        row = '<div class="row p-1">';
+        row += '<div class="col-md-4">';
+        row += '        <input type="text" class="form-control" name="fl_name[]" required placeholder="Family Name">';
+        row += '</div>';
+        row += '<div class="col-md-3">';
+        row += '        <input type="text" class="form-control" name="fl_relation[]" required placeholder="Family Status">';
+        row += '</div>';
+        row += '<div class="col-md-3"> ';
+        row += '        <input type="text" class="form-control selector" name="fl_dob[]" autocomplete="off" required placeholder="YYYY-MM-DD">';
+        row += '</div>';
+        row += '<div class="col-md-2 float-right">';
+        row += '        <button type="button" class="btn btn-small btn-danger" onclick="removeRow(this)">Delete</button>';
+        row += '</div>';
+        row += '</div>';
 
-        //append row
-        $("#add-family" ).on("click", function() {
-            row = '<div class="row p-1">';
-            row += '<div class="col-md-4">';
-            row += '        <input type="text" class="form-control" name="fl_name[]" required placeholder="Family Name">';
-            row += '</div>';
-            row += '<div class="col-md-3">';
-            row += '        <input type="text" class="form-control" name="fl_relation[]" required placeholder="Family Status">';
-            row += '</div>';
-            row += '<div class="col-md-3"> ';
-            row += '        <input type="text" class="form-control" name="fl_dob[]" required placeholder="YYYY-MM-DD">';
-            row += '</div>';
-            row += '<div class="col-md-2 float-right">';
-            row += '        <button type="button" class="btn btn-small btn-danger" onclick="removeRow(this)">Delete</button>';
-            row += '</div>';
-            row += '</div>';
+        $(".family-list").append(row);
 
-            $(".family-list").append(row);
+        $(".selector" ).datepicker({
+            dateFormat: "yy-mm-dd"
         });
-    });
-
+    }
+    
     //remove row
     function removeRow(e){
         $(e).closest(".row").remove();
@@ -151,10 +152,11 @@
                 }
             },
             error: function(xhr) {
-                console.log(xhr.responseJSON.errors);
-                alert("Please Fill All Data with Right Format")
+                var data = JSON.parse(xhr.responseText);
+                console.log(data);
+                alert(data.message)
                 $('.invalid-feedback').remove();
-                $.each(xhr.responseJSON.errors,function(field_name,error){
+                $.each(data.errors,function(field_name,error){
                     $(document).find('[name='+field_name+']').after('<label class="error invalid-feedback m-0 small d-block">' +error+ '</label>')
                 })
             }
