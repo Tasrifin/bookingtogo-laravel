@@ -1,7 +1,7 @@
 
 # bookingtogo-laravel : Tasrifin
 
-- Golang
+- Laravel
 - MySQL
 
 ## Application Manual
